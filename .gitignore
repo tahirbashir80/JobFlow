@@ -6,3 +6,4 @@ out
 *.log
 src/generated/prisma
 .DS_Store
+JobFlow.zip
