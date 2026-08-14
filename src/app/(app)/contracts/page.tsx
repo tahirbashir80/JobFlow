@@ -1,0 +1,24 @@
+import Link from "next/link";
+import { Plus, Pencil } from "lucide-react";
+import { requireTenant } from "@/lib/tenant/require-tenant";
+import { listContracts } from "@/lib/contracts/persistence";
+import { archiveContractAction } from "./actions";
+import { ContractArchiveButton } from "./ContractArchiveButton";
+import { ContractFilters } from "./ContractFilters";
+import { db } from "@/lib/db/prisma";
+
+function money(value: number | null, currency: string) { return value == null ? "—" : new Intl.NumberFormat(undefined,{style:"currency",currency,maximumFractionDigits:2}).format(value); }
+function date(value: string | null) { return value ? new Date(value).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}) : "—"; }
+function statusClass(status: string) { return status==="ACTIVE"?"bg-[var(--success-soft)] text-[var(--success)]":status==="DRAFT"?"bg-[var(--warning-soft)] text-[var(--warning)]":status==="CANCELLED"?"bg-[var(--danger-soft)] text-[var(--danger)]":"bg-[var(--surface-subtle)] text-[var(--muted)]"; }
+
+export default async function ContractsPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string }> }) {
+  const context=await requireTenant(); const params=await searchParams; const [rows,business]=await Promise.all([listContracts(context.businessId,params.q,params.status as any),db.business.findUnique({where:{id:context.businessId},select:{currency:true}})]);
+  const active=rows.filter(r=>r.status==="ACTIVE").length; const renewing=rows.filter(r=>r.renewalDate && new Date(r.renewalDate)<=new Date(Date.now()+60*86400000)).length;
+  return <main className="min-h-screen"><div data-page-width className="py-5 lg:py-6">
+    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"><div><p className="jf-eyebrow">CUSTOMER AGREEMENTS</p><h1 className="jf-page-title mt-1">Contracts</h1><p className="jf-page-subtitle mt-1.5">Manage customer contracts, coverage periods, renewals and commercial terms.</p></div><Link href="/contracts/new" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2.5 text-sm font-bold text-white hover:bg-[var(--primary-strong)]"><Plus size={16}/> New Contract</Link></div>
+    <div className="mt-6 grid gap-3 sm:grid-cols-3"><div className="jf-panel p-4"><p className="jf-metric-label">TOTAL CONTRACTS</p><p className="jf-metric-value">{rows.length}</p></div><div className="jf-panel p-4"><p className="jf-metric-label">ACTIVE CONTRACTS</p><p className="jf-metric-value">{active}</p></div><div className="jf-panel p-4"><p className="jf-metric-label">RENEWING IN 60 DAYS</p><p className="jf-metric-value">{renewing}</p></div></div>
+    <section className="jf-panel mt-5 overflow-hidden"><ContractFilters initialQuery={params.q || ""} initialStatus={params.status || ""} />
+      <div className="overflow-x-auto"><table className="w-full min-w-[920px] text-left"><thead className="bg-[var(--surface-subtle)]"><tr><th className="px-4 py-3">Contract</th><th className="px-4 py-3">Customer</th><th className="px-4 py-3">Coverage</th><th className="px-4 py-3">Billing</th><th className="px-4 py-3">Value</th><th className="px-4 py-3">End / Renewal</th><th className="px-4 py-3">Status</th><th className="px-4 py-3 text-right">Actions</th></tr></thead><tbody>{rows.map(r=><tr key={r.id} className="border-t border-[var(--border)]"><td className="px-4 py-3"><Link href={`/contracts/${r.id}/edit`} className="font-bold text-[var(--primary)] hover:underline">{r.contractNumber}</Link><p className="mt-0.5 text-xs text-[var(--muted)]">{r.title}</p></td><td className="px-4 py-3 text-sm font-semibold">{r.customerName}</td><td className="px-4 py-3 text-xs text-[var(--muted)]">{r.site?.name||"All sites"}{r.service&&<><br/>{r.service.name}</>}</td><td className="px-4 py-3 text-xs font-semibold">{r.billingCycle.replace("_"," ")}</td><td className="px-4 py-3 text-sm font-bold tabular-nums">{money(r.contractValue,business?.currency||"USD")}</td><td className="px-4 py-3 text-xs text-[var(--muted)]">{date(r.endDate)}{r.renewalDate&&<><br/>Renew {date(r.renewalDate)}</>}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase ${statusClass(r.status)}`}>{r.status}</span></td><td className="px-4 py-3"><div className="flex justify-end gap-1"><Link href={`/contracts/${r.id}/edit`} aria-label="Edit contract" className="grid h-8 w-8 place-items-center rounded-lg text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--primary)]"><Pencil size={14}/></Link><ContractArchiveButton action={archiveContractAction.bind(null,r.id)} /></div></td></tr>)}{!rows.length&&<tr><td colSpan={8} className="px-4 py-14 text-center text-sm text-[var(--muted)]">No contracts found.</td></tr>}</tbody></table></div>
+    </section>
+  </div></main>;
+}

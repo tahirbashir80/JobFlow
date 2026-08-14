@@ -1,0 +1,1 @@
+export { StatusBadge as InvoiceStatusBadge } from "../data-display/StatusBadge";

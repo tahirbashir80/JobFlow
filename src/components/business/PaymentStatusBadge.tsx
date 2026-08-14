@@ -1,0 +1,1 @@
+export { StatusBadge as PaymentStatusBadge } from "../data-display/StatusBadge";
