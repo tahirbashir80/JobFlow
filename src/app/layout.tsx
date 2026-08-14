@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./jobflow-refinement.css";
 import { ThemeProviderMount } from "@/components/theme/ThemeProviderMount";
 
 export const metadata: Metadata = {
