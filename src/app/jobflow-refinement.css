@@ -1,0 +1,58 @@
+/* JobFlow approved visual refinement layer. Keep this file additive: it refines the existing system without replacing application behavior. */
+
+/* Typography */
+.jf-page-title { font-size: 26px !important; font-weight: 700 !important; line-height: 1.2; }
+.jf-metric-value { font-size: 24px !important; font-weight: 700 !important; line-height: 1.2; }
+
+/* Shared controls */
+.jf-control { height: 36px; min-height: 36px; font-size: 13px; }
+
+/* Corporate navigation — preserve Lucide, increase visual presence. */
+.jf-shell-nav-item svg { width: 18px !important; height: 18px !important; flex: 0 0 18px; stroke-width: 1.9; }
+.jf-shell-nav-item[data-active="true"] svg { stroke-width: 2.1; }
+
+/* Table separators */
+table tbody tr { border-bottom: 1px solid var(--border); }
+table tbody tr:last-child { border-bottom: 0; }
+table tbody td { vertical-align: middle; }
+
+/* Semantic pills: darker border from the same color family. */
+[class*="bg-emerald-50"][class*="rounded-full"] { border: 1px solid #b9dec7; }
+[class*="bg-blue-50"][class*="rounded-full"] { border: 1px solid #bfd5e7; }
+[class*="bg-amber-50"][class*="rounded-full"] { border: 1px solid #ead39b; }
+[class*="bg-red-50"][class*="rounded-full"] { border: 1px solid #edbcbc; }
+[class*="bg-violet-50"][class*="rounded-full"] { border: 1px solid #d1c8e8; }
+[class*="bg-slate-100"][class*="rounded-full"] { border: 1px solid #d2dcda; }
+
+/* Record identifiers: CID and JOB share one visual language. */
+.jf-record-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--primary);
+  letter-spacing: .01em;
+}
+
+/* Click-to-call */
+.jf-phone-link { font-size: 11px; font-weight: 700; color: var(--foreground); text-decoration: none; }
+.jf-phone-link:hover { color: var(--primary); text-decoration: underline; }
+
+/* Tabs: no box outline; quiet hover, soft active surface, primary bottom rule. */
+.jf-tab { height: 40px; padding: 0 16px; border: 0; border-bottom: 1px solid transparent; border-radius: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; }
+.jf-tab:hover { border-radius: 6px 6px 0 0; background: var(--surface-hover); color: var(--foreground); }
+.jf-tab[data-active="true"] { border-bottom-color: var(--primary); border-radius: 6px 6px 0 0; background: var(--primary-soft); color: var(--primary); }
+
+/* Pagination: card-outline surface, 10% smaller than the old 36px control. */
+.jf-pagination { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--foreground); font-size: 12px; font-weight: 600; box-shadow: var(--jf-shadow-panel); }
+.jf-pagination:hover, .jf-pagination[data-active="true"] { background: var(--surface-hover); color: var(--primary); }
+
+/* Dashboard chart bars: subtle primary gradient instead of flat fills. */
+[class*="bg-[var(--primary)]"] { background-image: linear-gradient(180deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 58%, white) 100%) !important; }
+[class*="bg-[var(--accent)]"] { background-image: linear-gradient(180deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, white) 100%) !important; }
+
+/* Keep responsive density intentional. */
+@media (max-width: 640px) {
+  .jf-page-title { font-size: 26px !important; }
+  .jf-metric-value { font-size: 24px !important; }
+}
